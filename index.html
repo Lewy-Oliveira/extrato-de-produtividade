@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Ocorrências Policiais</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 15px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .form-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
+        .counter-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .counter-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .counter-input {
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+        }
+        
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success:hover {
+            background-color: #219955;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .summary-table th, .summary-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .summary-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .summary-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .date-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .date-btn {
+            padding: 8px 12px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .date-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .date-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            color: #777;
+            font-size: 0.8rem;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Registro de Ocorrências Policiais</h1>
+            <div class="subtitle">Preencha os dados durante o serviço</div>
+        </header>
+        
+        <main>
+            <div id="form-view">
+                <div class="form-section">
+                    <h2 class="section-title">Informações Gerais</h2>
+                    
+                    <div class="form-group">
+                        <label for="data">Data:</label>
+                        <input type="text" id="data" placeholder="DD/MM/AAAA" value="">
+                        
+                        <div class="date-options">
+                            <button class="date-btn" data-date="today">Hoje</button>
+                            <button class="date-btn" data-date="yesterday">Ontem</button>
+                            <button class="date-btn" data-date="custom">Outra Data</button>
+                        </div>
+                        
+                        <div id="custom-date-input" class="form-group hidden">
+                            <input type="text" id="custom-date" placeholder="DD/MM/AAAA">
+                            <small>Digite a data no formato DD/MM/AAAA</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="qpp">QPP:</label>
+                        <input type="text" id="qpp" placeholder="Digite o QPP">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="policiamento">Policiamento:</label>
+                        <input type="text" id="policiamento" placeholder="Tipo de policiamento">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title">Ocorrências e Apreensões</h2>
+                    
+                    <div class="form-group">
+                        <label for="ocorrencias">Quantidade de ocorrências atendidas (Registradas no CIOP):</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="ocorrencias" data-action="decrease">-</button>
+                            <input type="number" id="ocorrencias" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="ocorrencias" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mandado-prisao">Mandado de Prisão:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="mandado-prisao" data-action="decrease">-</button>
+                            <input type="number" id="mandado-prisao" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="mandado-prisao" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="flagrantes">Flagrantes:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="flagrantes" data-action="decrease">-</button>
+                            <input type="number" id="flagrantes" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="flagrantes" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tco">TCO:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="tco" data-action="decrease">-</button>
+                            <input type="number" id="tco" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="tco" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="menor-apreendido">Menor Apreendido:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="menor-apreendido" data-action="decrease">-</button>
+                            <input type="number" id="menor-apreendido" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="menor-apreendido" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="armas">Armas apreendidas:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="armas" data-action="decrease">-</button>
+                            <input type="number" id="armas" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="armas" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="drogas">Drogas (Kg):</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="drogas" data-action="decrease">-</button>
+                            <input type="number" id="drogas" class="counter-input" value="0" min="0" step="0.01">
+                            <button class="counter-btn" data-target="drogas" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="veiculos-apreendidos">Veículos apreendidos:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="veiculos-apreendidos" data-action="decrease">-</button>
+                            <input type="number" id="veiculos-apreendidos" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="veiculos-apreendidos" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="veiculos-recuperados">Veículos recuperados (SIVA-R):</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="veiculos-recuperados" data-action="decrease">-</button>
+                            <input type="number" id="veiculos-recuperados" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="veiculos-recuperados" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="veiculos-roubados">Veículos Roubados (SIVA):</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="veiculos-roubados" data-action="decrease">-</button>
+                            <input type="number" id="veiculos-roubados" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="veiculos-roubados" data-action="increase">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title">Abordagens e Checkpoints</h2>
+                    
+                    <div class="form-group">
+                        <label for="abordagens-pessoas">Abordagens a pessoas:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="abordagens-pessoas" data-action="decrease">-</button>
+                            <input type="number" id="abordagens-pessoas" class="counter-input" value="10" min="0">
+                            <button class="counter-btn" data-target="abordagens-pessoas" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="abordagens-veiculos">Abordagens a veículos:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="abordagens-veiculos" data-action="decrease">-</button>
+                            <input type="number" id="abordagens-veiculos" class="counter-input" value="0" min="0">
+                            <button class="counter-btn" data-target="abordagens-veiculos" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="abordagens-motocicletas">Abordagens a motocicletas:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="abordagens-motocicletas" data-action="decrease">-</button>
+                            <input type="number" id="abordagens-motocicletas" class="counter-input" value="5" min="0">
+                            <button class="counter-btn" data-target="abordagens-motocicletas" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="checkpoint">CheckPoint:</label>
+                        <div class="counter-group">
+                            <button class="counter-btn" data-target="checkpoint" data-action="decrease">-</button>
+                            <input type="number" id="checkpoint" class="counter-input" value="3" min="0">
+                            <button class="counter-btn" data-target="checkpoint" data-action="increase">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button id="reset-btn" class="btn-danger">Limpar Formulário</button>
+                    <button id="generate-report" class="btn-success">Gerar Relatório</button>
+                </div>
+            </div>
+            
+            <div id="report-view" class="hidden">
+                <div class="form-section">
+                    <h2 class="section-title">Relatório de Ocorrências</h2>
+                    
+                    <table class="summary-table" id="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-body">
+                            <!-- Os dados serão inseridos aqui via JavaScript -->
+                        </tbody>
+                    </table>
+                    
+                    <div class="btn-group">
+                        <button id="back-to-form" class="btn-primary">Voltar ao Formulário</button>
+                        <button id="download-pdf" class="btn-success">Baixar PDF</button>
+                        <button id="send-whatsapp" class="btn-success">Enviar por WhatsApp</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Sistema de Registro de Ocorrências Policiais</p>
+        </footer>
+    </div>
+
+    <!-- Incluindo as bibliotecas necessárias -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+        // Inicialização quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar valores iniciais
+            setInitialValues();
+            
+            // Configurar os botões de contador
+            setupCounterButtons();
+            
+            // Configurar os botões de data
+            setupDateButtons();
+            
+            // Configurar os botões principais
+            document.getElementById('generate-report').addEventListener('click', generateReport);
+            document.getElementById('back-to-form').addEventListener('click', backToForm);
+            document.getElementById('reset-btn').addEventListener('click', resetForm);
+            document.getElementById('download-pdf').addEventListener('click', downloadPDF);
+            document.getElementById('send-whatsapp').addEventListener('click', sendWhatsApp);
+            
+            // Salvar dados automaticamente quando houver mudanças
+            setupAutoSave();
+            
+            // Carregar dados salvos (se existirem)
+            loadSavedData();
+        });
+        
+        // Definir valores iniciais
+        function setInitialValues() {
+            // Definir data de hoje como padrão
+            setTodayDate();
+            
+            // Definir valores padrão conforme especificado
+            document.getElementById('abordagens-pessoas').value = '10';
+            document.getElementById('abordagens-motocicletas').value = '5';
+            document.getElementById('checkpoint').value = '3';
+            
+            // Todos os outros campos numéricos começam com 0
+            const numericFields = [
+                'ocorrencias', 'mandado-prisao', 'flagrantes', 'tco', 
+                'menor-apreendido', 'armas', 'drogas', 'veiculos-apreendidos',
+                'veiculos-recuperados', 'veiculos-roubados', 'abordagens-veiculos'
+            ];
+            
+            numericFields.forEach(field => {
+                document.getElementById(field).value = '0';
+            });
+            
+            // Campos de texto começam vazios
+            document.getElementById('qpp').value = '';
+            document.getElementById('policiamento').value = '';
+            document.getElementById('custom-date').value = '';
+        }
+        
+        // Carregar dados salvos
+        function loadSavedData() {
+            if (localStorage.getItem('policingFormData')) {
+                const savedData = JSON.parse(localStorage.getItem('policingFormData'));
+                
+                // Preencher os campos com os dados salvos
+                for (const key in savedData) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = savedData[key];
+                    }
+                }
+                
+                // Atualizar botão de data ativo baseado na data salva
+                updateActiveDateButton();
+            }
+        }
+        
+        // Atualizar botão de data ativo
+        function updateActiveDateButton() {
+            const dataInput = document.getElementById('data');
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            const currentDate = dataInput.value;
+            const todayFormatted = formatDate(today);
+            const yesterdayFormatted = formatDate(yesterday);
+            
+            // Remover classe active de todos os botões
+            document.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (currentDate === todayFormatted) {
+                document.querySelector('.date-btn[data-date="today"]').classList.add('active');
+                document.getElementById('custom-date-input').classList.add('hidden');
+            } else if (currentDate === yesterdayFormatted) {
+                document.querySelector('.date-btn[data-date="yesterday"]').classList.add('active');
+                document.getElementById('custom-date-input').classList.add('hidden');
+            } else {
+                document.querySelector('.date-btn[data-date="custom"]').classList.add('active');
+                document.getElementById('custom-date-input').classList.remove('hidden');
+                document.getElementById('custom-date').value = currentDate;
+            }
+        }
+        
+        // Configurar os botões de contador
+        function setupCounterButtons() {
+            const counterButtons = document.querySelectorAll('.counter-btn');
+            
+            counterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const action = this.getAttribute('data-action');
+                    const input = document.getElementById(targetId);
+                    
+                    let value = parseFloat(input.value) || 0;
+                    
+                    if (action === 'increase') {
+                        value += targetId === 'drogas' ? 0.1 : 1;
+                    } else if (action === 'decrease' && value > 0) {
+                        value -= targetId === 'drogas' ? 0.1 : 1;
+                        // Garantir que não fique negativo
+                        if (value < 0) value = 0;
+                    }
+                    
+                    // Formatar para 2 casas decimais se for o campo de drogas
+                    input.value = targetId === 'drogas' ? value.toFixed(2) : Math.round(value);
+                    saveFormData();
+                });
+            });
+        }
+        
+        // Configurar os botões de data
+        function setupDateButtons() {
+            const dateButtons = document.querySelectorAll('.date-btn');
+            const customDateInput = document.getElementById('custom-date-input');
+            const dataInput = document.getElementById('data');
+            const customDateField = document.getElementById('custom-date');
+            
+            dateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const dateType = this.getAttribute('data-date');
+                    
+                    // Remover classe active de todos os botões
+                    dateButtons.forEach(btn => btn.classList.remove('active'));
+                    // Adicionar classe active ao botão clicado
+                    this.classList.add('active');
+                    
+                    if (dateType === 'today') {
+                        setTodayDate();
+                        customDateInput.classList.add('hidden');
+                    } else if (dateType === 'yesterday') {
+                        setYesterdayDate();
+                        customDateInput.classList.add('hidden');
+                    } else if (dateType === 'custom') {
+                        customDateInput.classList.remove('hidden');
+                        // Se já houver uma data personalizada, use-a
+                        if (customDateField.value) {
+                            dataInput.value = customDateField.value;
+                        }
+                    }
+                    
+                    saveFormData();
+                });
+            });
+            
+            // Atualizar data principal quando a data personalizada for alterada
+            customDateField.addEventListener('input', function() {
+                if (this.value) {
+                    dataInput.value = this.value;
+                    saveFormData();
+                }
+            });
+            
+            // Definir "Hoje" como padrão inicial
+            document.querySelector('.date-btn[data-date="today"]').classList.add('active');
+        }
+        
+        // Definir data de hoje
+        function setTodayDate() {
+            const today = new Date();
+            document.getElementById('data').value = formatDate(today);
+        }
+        
+        // Definir data de ontem
+        function setYesterdayDate() {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            document.getElementById('data').value = formatDate(yesterday);
+        }
+        
+        // Formatar data para exibição (DD/MM/AAAA)
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        
+        // Salvar dados do formulário no localStorage
+        function saveFormData() {
+            const formData = {};
+            
+            // Coletar todos os valores dos campos
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                formData[input.id] = input.value;
+            });
+            
+            // Salvar no localStorage
+            localStorage.setItem('policingFormData', JSON.stringify(formData));
+        }
+        
+        // Configurar salvamento automático
+        function setupAutoSave() {
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('change', saveFormData);
+                input.addEventListener('input', saveFormData);
+            });
+        }
+        
+        // Gerar relatório
+        function generateReport() {
+            // Coletar dados do formulário
+            const formData = JSON.parse(localStorage.getItem('policingFormData'));
+            
+            // Atualizar a tabela de resumo
+            const reportBody = document.getElementById('report-body');
+            reportBody.innerHTML = '';
+            
+            for (const key in formData) {
+                if (formData[key] !== '' && formData[key] !== '0') {
+                    const row = document.createElement('tr');
+                    
+                    const labelCell = document.createElement('td');
+                    labelCell.textContent = getFieldLabel(key);
+                    
+                    const valueCell = document.createElement('td');
+                    valueCell.textContent = formData[key];
+                    
+                    row.appendChild(labelCell);
+                    row.appendChild(valueCell);
+                    reportBody.appendChild(row);
+                }
+            }
+            
+            // Alternar para a visualização do relatório
+            document.getElementById('form-view').classList.add('hidden');
+            document.getElementById('report-view').classList.remove('hidden');
+        }
+        
+        // Voltar ao formulário
+        function backToForm() {
+            document.getElementById('form-view').classList.remove('hidden');
+            document.getElementById('report-view').classList.add('hidden');
+        }
+        
+        // Limpar formulário
+        function resetForm() {
+            if (confirm('Tem certeza que deseja limpar todos os dados do formulário?')) {
+                localStorage.removeItem('policingFormData');
+                
+                // Restaurar valores iniciais
+                setInitialValues();
+                
+                // Resetar botões de data
+                document.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.date-btn[data-date="today"]').classList.add('active');
+                document.getElementById('custom-date-input').classList.add('hidden');
+                
+                saveFormData();
+            }
+        }
+        
+        // Baixar PDF
+        function downloadPDF() {
+            // Usar jsPDF para gerar o PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Título
+            doc.setFontSize(16);
+            doc.text('Relatório de Ocorrências Policiais', 14, 15);
+            
+            // Data de geração
+            doc.setFontSize(10);
+            doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 25);
+            
+            // Coletar dados
+            const formData = JSON.parse(localStorage.getItem('policingFormData'));
+            const tableData = [];
+            
+            for (const key in formData) {
+                if (formData[key] !== '' && formData[key] !== '0') {
+                    tableData.push([getFieldLabel(key), formData[key]]);
+                }
+            }
+            
+            // Adicionar tabela
+            doc.autoTable({
+                startY: 30,
+                head: [['Item', 'Valor']],
+                body: tableData,
+                theme: 'grid',
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [44, 62, 80] }
+            });
+            
+            // Salvar o PDF
+            doc.save('relatorio_ocorrencias.pdf');
+        }
+        
+        // Enviar por WhatsApp
+        function sendWhatsApp() {
+            // Coletar dados
+            const formData = JSON.parse(localStorage.getItem('policingFormData'));
+            
+            // Construir mensagem
+            let message = "Relatório de Ocorrências Policiais\n\n";
+            
+            for (const key in formData) {
+                if (formData[key] !== '' && formData[key] !== '0') {
+                    message += `${getFieldLabel(key)}: ${formData[key]}\n`;
+                }
+            }
+            
+            // Codificar a mensagem para URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Criar link do WhatsApp
+            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+            
+            // Abrir em uma nova janela
+            window.open(whatsappUrl, '_blank');
+        }
+        
+        // Obter rótulo do campo para exibição
+        function getFieldLabel(fieldId) {
+            const labels = {
+                'data': 'Data',
+                'qpp': 'QPP',
+                'policiamento': 'Policiamento',
+                'ocorrencias': 'Quantidade de ocorrências atendidas (Registradas no CIOP)',
+                'mandado-prisao': 'Mandado de Prisão',
+                'flagrantes': 'Flagrantes',
+                'tco': 'TCO',
+                'menor-apreendido': 'Menor Apreendido',
+                'armas': 'Armas apreendidas',
+                'drogas': 'Drogas (Kg)',
+                'veiculos-apreendidos': 'Veículos apreendidos',
+                'veiculos-recuperados': 'Veículos recuperados (SIVA-R)',
+                'veiculos-roubados': 'Veículos Roubados (SIVA)',
+                'abordagens-pessoas': 'Abordagens a pessoas',
+                'abordagens-veiculos': 'Abordagens a veículos',
+                'abordagens-motocicletas': 'Abordagens a motocicletas',
+                'checkpoint': 'CheckPoint',
+                'custom-date': 'Data Personalizada'
+            };
+            
+            return labels[fieldId] || fieldId;
+        }
+    </script>
+</body>
+</html>
